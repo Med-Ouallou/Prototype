@@ -22,8 +22,8 @@ val persons = mutableStateListOf<Person>()
 
 @Composable
 fun FirstNameScreen(){
-    var Name by rememberSaveable { mutableStateOf("") }
-
+//    var Name by rememberSaveable { mutableStateOf("") }
+    var CleanName by rememberSaveable { mutableStateOf("") }
     Column (
         modifier = Modifier
             .fillMaxSize()
@@ -34,15 +34,37 @@ fun FirstNameScreen(){
         Row (horizontalArrangement = Arrangement.spacedBy(8.dp)) {
 
             TextField(
-                value = Name,
-                onValueChange = { Name = it},
+                value = CleanName,
+                onValueChange = { CleanName = it},
                 label = { Text("Enter first name") },
                 modifier = Modifier.weight(1f)
             )
             Button(onClick = {
-                if (Name.isNotBlank()){
-                    persons.add(Person(Name))
-                    Name = "" // clear the input
+                if (CleanName.isNotBlank()){
+                    var counter = 0
+
+                    if(persons.isNotEmpty()){
+
+                        for (p in persons){
+
+                            if(p.name === CleanName){
+
+                                CleanName = CleanName + "+"
+                                persons.add(Person(CleanName))
+                            }else{
+                                persons.add(Person(CleanName))
+                                CleanName = "" // clear the input
+                            }
+                        }
+                    }
+
+
+                    else{
+                        persons.add(Person(CleanName))
+                        CleanName = "" // clear the input
+                    }
+
+
                 }
             } ) {
                 Text("Add Person")
@@ -51,7 +73,8 @@ fun FirstNameScreen(){
 
         persons.forEach { p ->
             Text(
-                "\uD83D\uDC64 ${p.name}",
+
+                "\uD83D\uDC64 ${p.name.trim().replaceFirstChar { it.uppercase() }}",
                 style = MaterialTheme.typography.bodyLarge
             )
         }
